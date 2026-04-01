@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://au-backend-1-1jf0.onrender.com/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://au-backend-1-1jf0.onrender.com/api',
   timeout: 10000, // ⏱️ 10 seconds
+  withCredentials: true, // ✅ IMPORTANT! Allow credentials (cookies, JWT)
 });
 
 // 🔐 REQUEST INTERCEPTOR
@@ -12,6 +13,8 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // ✅ Ensure Content-Type is set
+    config.headers['Content-Type'] = 'application/json';
     return config;
   },
   (error) => Promise.reject(error)

@@ -4,9 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import './Dashboard.css';
 
-//const BRANCHES = ['CSE', 'ECE', 'EEE', 'MECH', 'CIVIL'];
-//const TABS = ['Students', 'Hall Allocations', 'Notifications'];
-
 const EMPTY_ALLOC = {
   branch: 'CSE', section: '', rollNumberStart: '', rollNumberEnd: '',
   hallName: '', roomNumber: '', subject: '', examDate: '', examTime: '',
@@ -18,14 +15,10 @@ const EMPTY_NOTIF = {
 };
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState('Students');
   const [students, setStudents] = useState([]);
   const [allocations, setAllocations] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [branchFilter, setBranchFilter] = useState('');
-  const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ text: '', type: '' });
   const [allocForm, setAllocForm] = useState(EMPTY_ALLOC);
   const [notifForm, setNotifForm] = useState(EMPTY_NOTIF);
@@ -36,17 +29,14 @@ export default function AdminDashboard() {
   };
 
   const loadStudents = useCallback(async (branch = '') => {
-    setLoading(true);
     try {
       const url = branch ? `/admin/students/branch/${branch}` : '/admin/students';
       const res = await api.get(url);
       setStudents(res.data);
     } catch {
       showMsg('Failed to load students', 'error');
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [showMsg]);
 
   const loadAllocations = useCallback(async () => {
     try {
@@ -55,35 +45,10 @@ export default function AdminDashboard() {
     } catch {}
   }, []);
 
-  const loadNotifications = useCallback(async () => {
-    try {
-      const res = await api.get('/admin/notifications');
-      setNotifications(res.data);
-    } catch {}
-  }, []);
-
   useEffect(() => {
     loadStudents();
     loadAllocations();
-    loadNotifications();
-  }, [loadStudents, loadAllocations, loadNotifications]);
-
-  const handleBranchFilter = (b) => {
-    setBranchFilter(b);
-    loadStudents(b);
-  };
-
-  const handleCreateAllocation = async (e) => {
-    e.preventDefault();
-    try {
-      await api.post('/admin/hall-allocations', allocForm);
-      showMsg('✅ Hall allocation created!');
-      setAllocForm(EMPTY_ALLOC);
-      loadAllocations();
-    } catch (err) {
-      showMsg('❌ Failed to create allocation', 'error');
-    }
-  };
+  }, [loadStudents, loadAllocations]);
 
   const handleDeleteAllocation = async (id) => {
     if (!window.confirm('Delete this allocation?')) return;
@@ -113,7 +78,6 @@ export default function AdminDashboard() {
       await api.post('/admin/notifications', payload);
       showMsg('✅ Notification sent!');
       setNotifForm(EMPTY_NOTIF);
-      loadNotifications();
     } catch {
       showMsg('❌ Failed to send notification', 'error');
     }
@@ -124,7 +88,6 @@ export default function AdminDashboard() {
     navigate('/login');
   };
 
-  const setAlloc = (field) => (e) => setAllocForm({ ...allocForm, [field]: e.target.value });
   const setNotif = (field) => (e) =>
     setNotifForm({ ...notifForm, [field]: e.target.value });
 
@@ -137,37 +100,32 @@ export default function AdminDashboard() {
 
       {msg.text && <div>{msg.text}</div>}
 
-      {tab === 'Students' && (
-        <div>
-          <h2>Students</h2>
-          {students.map((s) => (
-            <div key={s.id}>{s.name} ({s.rollNumber})</div>
-          ))}
-        </div>
-      )}
+      <div>
+        <h2>Students</h2>
+        {students.map((s) => (
+          <div key={s.id}>{s.name} ({s.rollNumber})</div>
+        ))}
+      </div>
 
-      {tab === 'Hall Allocations' && (
-        <div>
-          <h2>Allocations</h2>
-          {allocations.map((a) => (
-            <div key={a.id}>
-              {a.subject} - {a.hallName}
-              <button onClick={() => handleDeleteAllocation(a.id)}>Delete</button>
-            </div>
-          ))}
-        </div>
-      )}
+      <div>
+        <h2>Allocations</h2>
+        {allocations.map((a) => (
+          <div key={a.id}>
+            {a.subject} - {a.hallName}
+            <button onClick={() => handleDeleteAllocation(a.id)}>Delete</button>
+          </div>
+        ))}
+      </div>
 
-      {tab === 'Notifications' && (
-        <form onSubmit={handleSendNotification}>
-          <textarea
-            placeholder="Message"
-            value={notifForm.message}
-            onChange={setNotif('message')}
-          />
-          <button type="submit">Send</button>
-        </form>
-      )}
+      <form onSubmit={handleSendNotification}>
+        <h2>Send Notification</h2>
+        <textarea
+          placeholder="Message"
+          value={notifForm.message}
+          onChange={setNotif('message')}
+        />
+        <button type="submit">Send</button>
+      </form>
     </div>
   );
 }

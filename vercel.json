@@ -1,0 +1,8 @@
+{
+  "buildCommand": "cross-env CI=false npm run build",
+  "outputDirectory": "build",
+  "env": {
+    "DISABLE_ESLINT_PLUGIN": "true",
+    "CI": "false"
+  }
+}

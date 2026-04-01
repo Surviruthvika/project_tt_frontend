@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import './Dashboard.css';
 
-const BRANCHES = ['CSE', 'ECE', 'EEE', 'MECH', 'CIVIL'];
-const TABS = ['Students', 'Hall Allocations', 'Notifications'];
+//const BRANCHES = ['CSE', 'ECE', 'EEE', 'MECH', 'CIVIL'];
+//const TABS = ['Students', 'Hall Allocations', 'Notifications'];
 
 const EMPTY_ALLOC = {
   branch: 'CSE', section: '', rollNumberStart: '', rollNumberEnd: '',
@@ -18,7 +18,7 @@ const EMPTY_NOTIF = {
 };
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth();
+  //const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('Students');
   const [students, setStudents] = useState([]);

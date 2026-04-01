@@ -38,7 +38,7 @@
     ]
   },
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

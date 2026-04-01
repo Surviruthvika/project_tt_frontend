@@ -18,7 +18,7 @@ const EMPTY_NOTIF = {
 };
 
 export default function AdminDashboard() {
-  //const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('Students');
   const [students, setStudents] = useState([]);
